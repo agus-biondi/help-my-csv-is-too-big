@@ -1,4 +1,4 @@
-# [team name] Team Charter
+# team-two Team Charter
 
 ## Instructions
 
