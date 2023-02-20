@@ -1,23 +1,12 @@
 # team-two Design Document
 
-## Instructions
-
-*Save a copy of this template for your team in the same folder that contains
-this template.*
-
-*Replace italicized text (including this text!) with details of the design you
-are proposing for your team project. (Your replacement text shouldn't be in
-italics)*
-
-*You should take a look at the example design document in the same folder as
-this template for more guidance on the types of information to capture, and the
-level of detail to aim for.*
-
 ## *Project Title* Design
 
 ## 1. Problem Statement
 
-*Explain clearly what problem you are trying to solve.*
+CSV Files are commonly used to store, or transfer information. Spreadsheet programs are the most common way to easily open, edit, and export csv files. Once the size of a csv file increases beyond a certain point, it can be slow, or even impossible to use spreadsheet programs to open, or edit csv files. This happens even if all you care about are a couple of rows inside a csv.
+
+This design document describes the "help, my csv is too big" service, which will allow used to upload csv files, view some of its data such as headers, or the number of rows. The service will allow users to filter out columns they don't need, and select only the records they care about using filters. The service will then retunr to the user a csv file with only the information they requested.
 
 
 ## 2. Top Questions to Resolve in Review
