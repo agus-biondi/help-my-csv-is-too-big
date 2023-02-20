@@ -1,4 +1,4 @@
-# [Team name] Reflection
+# team-two Reflection
 
 ## Instructions
 
