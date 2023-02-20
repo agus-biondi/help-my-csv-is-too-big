@@ -1,4 +1,4 @@
-# [Team Name] Project Rubric
+# team-two Project Rubric
 
 ## Background
 
