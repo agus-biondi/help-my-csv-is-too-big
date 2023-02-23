@@ -1,9 +1,16 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    set('awsSpringVersion', '2.4.2')
+    set('testcontainersVersion', '1.17.5')
 }
 
 tasks.withType(Checkstyle) {
@@ -34,6 +41,18 @@ sourceSets {
 }
 
 dependencies {
+    
+    //SpringBoot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation group: 'com.amazonaws.serverless', name: 'aws-serverless-java-container-springboot2', version: '1.4'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-function-adapter-aws', version: '3.2.4'
+
+
     implementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
@@ -59,6 +78,20 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-events:2.2.9'
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
 
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:${awsSpringVersion}"
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
+}
+
+bootRun {
+    jvmArgs = [
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    ]
 }
 
 task buildZip(type: Zip) {
@@ -67,4 +100,6 @@ task buildZip(type: Zip) {
     into('./lib') {
         from configurations.runtimeClasspath
     }
+
+
 }
