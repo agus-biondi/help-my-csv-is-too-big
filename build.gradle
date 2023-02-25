@@ -6,6 +6,9 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://www.webjars.org/m2' }
 }
 
 ext {
@@ -41,13 +44,22 @@ sourceSets {
 }
 
 dependencies {
-    
+    implementation 'junit:junit:4.13.1'
+
+
+    // AssertJ
+    testImplementation 'org.assertj:assertj-core:3.20.2'
+
+
     //SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation group: 'com.amazonaws.serverless', name: 'aws-serverless-java-container-springboot2', version: '1.4'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-function-adapter-aws', version: '3.2.4'
@@ -77,6 +89,12 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:2.2.9'
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
+
+    implementation 'org.webjars:bootstrap-switch:3.3.4'
+
+
+    //detect csv encoding
+    implementation 'com.ibm.icu:icu4j:69.1'
 
 
 }

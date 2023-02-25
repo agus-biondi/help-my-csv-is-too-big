@@ -1,4 +1,4 @@
-package main.java.com.example.csvPlusPlus.Application;
+package main.java.com.example.csvPlusPlus;
 
 import com.amazonaws.auth.*;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;

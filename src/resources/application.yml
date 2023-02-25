@@ -1,0 +1,9 @@
+cloud:
+  aws:
+    region: us-east-1
+  application:
+    bucket:
+      name: help-my-csv-is-too-big
+
+
+

@@ -6,3 +6,5 @@ src.main.resources.application.yaml
 
 # Ignore Gradle build output directory
 build
+
+bitcoindata.csv

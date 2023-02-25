@@ -1,4 +1,4 @@
-package com.example.csvPlusPlus;
+package main.java.com.example.csvPlusPlus;
 
 import com.amazonaws.services.s3.AmazonS3;
 import org.springframework.boot.SpringApplication;

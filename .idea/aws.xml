@@ -2,14 +2,17 @@
 <project version="4">
   <component name="accountSettings">
     <option name="activeProfile" value="profile:default" />
-    <option name="activeRegion" value="us-east-1" />
+    <option name="activeRegion" value="us-west-2" />
     <option name="recentlyUsedProfiles">
       <list>
         <option value="profile:default" />
+        <option value="profile:s3-for-csv-program" />
+        <option value="profile:492664502825_BD-Student-Unit-4" />
       </list>
     </option>
     <option name="recentlyUsedRegions">
       <list>
+        <option value="us-west-2" />
         <option value="us-east-1" />
       </list>
     </option>
