@@ -25,6 +25,10 @@ public class UploadController {
         this.storageService = storageService;
     }
 
+    @GetMapping("/")
+    public String redirect() {
+        return "redirect:/upload";
+    }
     @GetMapping("/upload")
     public ModelAndView getDashboardView() {
         ModelAndView modelAndView = new ModelAndView("upload");

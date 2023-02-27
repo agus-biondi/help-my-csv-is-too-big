@@ -50,18 +50,17 @@ public class EditorController {
 
     @PostMapping("/editor/{fileName}/download")
     public ResponseEntity<ByteArrayResource> download(@PathVariable String fileName,
-                                                      @RequestParam(value = "toggle", required = false) List<String> selectedToggles) {
+                                                      @RequestParam(value = "toggle", required = false) List<Integer> selectedColumnNumbers) {
 
-        System.out.println(selectedToggles.toString());
-        return null;
-//        byte[] data = storageService.downloadFile(fileName);
-//        ByteArrayResource resource = new ByteArrayResource(data);
-//        return ResponseEntity
-//                .ok()
-//                .contentLength(data.length)
-//                .header("Content-type", "application/octet-stream")
-//                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
-//                .body(resource);
+        byte[] data = storageService.downloadFile(fileName, selectedColumnNumbers);
+        ByteArrayResource resource = new ByteArrayResource(data);
+        String downloadFileName = fileName.substring(0, fileName.length() - 36);
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header("Content-type", "application/octet-stream")
+                .header("Content-disposition", "attachment; filename=\"" + downloadFileName + "not_as_big_as_it_once_was" + "\"")
+                .body(resource);
     }
 
     /*

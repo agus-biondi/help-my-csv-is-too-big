@@ -157,7 +157,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-8">
-          currenty selected
+          Column Data
         </div>
         <div class="col-sm-4">
           <h4>metadata</h4>
@@ -197,12 +197,12 @@
 
                 <form method="post" th:action="'/editor/' + ${fileName} + '/download'" th:object="${form}">
                   <div class="checkbox-wrapper" >
-                    <div th:each="toggle : ${toggles}" class="checkbox-item">
+                    <div th:each="toggle, iterStat : ${toggles}" class="checkbox-item">
 
 
                       <div class="btn-group" role="group">
 
-                      <input type="checkbox" th:id="${toggle}" name="toggle" th:value="${#arrays.index(toggles, toggle)}" class="btn-check" autocomplete="off" checked>
+                      <input type="checkbox" th:id="${toggle}" name="toggle" th:value="${iterStat.index + 1}" class="btn-check" autocomplete="off" checked>
                       <label class="btn btn-outline-success" th:for="${toggle}" th:text="${toggle}"></label>
 
                         <button type="button" class="btn btn-link magnify-btn ml-auto" onclick="requestColumnSynopsis('${toggleIndex.index}')">

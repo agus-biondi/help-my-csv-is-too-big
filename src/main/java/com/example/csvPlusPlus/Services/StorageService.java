@@ -33,6 +33,7 @@ public class StorageService {
         return s3BucketName;
     }
 
+    //TODO what if same filenameand UUID...
     public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
         String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
@@ -99,6 +100,10 @@ public class StorageService {
     }
 
     private SelectRecordsInputStream queryCSV(String fileName, String query, String delimiter) {
+        if (delimiter.equals("\\t")) {
+            System.out.println("yes");
+            delimiter = "\t";
+        }
         SelectObjectContentResult result = s3Client.selectObjectContent(
                 new SelectObjectContentRequest()
                         .withBucketName(s3BucketName)
@@ -106,10 +111,10 @@ public class StorageService {
                         .withExpression(query)
                         .withExpressionType(ExpressionType.SQL)
                         .withInputSerialization(new InputSerialization().withCsv(new CSVInput()
-                                .withFieldDelimiter(",")
+                                .withFieldDelimiter(delimiter.charAt(0))
                                 .withRecordDelimiter('\n')))
                         .withOutputSerialization(new OutputSerialization().withCsv(new CSVOutput()
-                                .withFieldDelimiter(",")
+                                .withFieldDelimiter(delimiter.charAt(0))
                                 .withRecordDelimiter('\n'))
                         )
 
@@ -120,27 +125,36 @@ public class StorageService {
 
     public List<String> getColumnSynopsis(String fileName, int columnIndex) {
 
-        String query = String.format("SELECT * FROM s._%d", columnIndex);
+        String query = String.format("%d", columnIndex);
         //TODO DELIMITER should be a class field....
         String columnData = Utilites.SelectRecordsInputStreamToString(queryCSV(fileName, query, ","));
         return null;
     }
 
-    public byte[] downloadFile(String fileName) {
+    public byte[] downloadFile(String fileName, List<Integer> selectedColumnNumbers) {
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
         String delimiter = s3Object.getObjectMetadata().getUserMetaDataOf("delimiter");
 
-        //SelectRecordsInputStream
+        StringBuilder query = new StringBuilder("SELECT ");
+        for (Integer i : selectedColumnNumbers) {
+            query.append(String.format("s._%d, ", i));
+        }
+        query.deleteCharAt(query.lastIndexOf(","));
+        query.append("FROM s3Object s");
+
+        System.out.println(query.toString());
+        SelectRecordsInputStream recordsResults = queryCSV(fileName, query.toString(), delimiter);
 
 
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        //S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
-            byte[] content = IOUtils.toByteArray(inputStream);
+            byte[] content = IOUtils.toByteArray(recordsResults);
             return content;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
+
     }
 
 
