@@ -4,21 +4,17 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
-import main.java.com.example.csvPlusPlus.EncodingConverter;
+import main.java.com.example.csvPlusPlus.Utilities.EncodingConverter;
+import main.java.com.example.csvPlusPlus.Utilities.Utilites;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StorageService {
@@ -37,45 +33,52 @@ public class StorageService {
         return s3BucketName;
     }
 
-    public String uploadCsv(MultipartFile multipartFile) {
+    public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
         String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
         EncodingConverter enc = new EncodingConverter();
 
-        File csv;
+        File csv = null;
         try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            Map<String, String> userMetaData = new TreeMap<>();
+            userMetaData.put("delimiter", delimiter);
+            metadata.setUserMetadata(userMetaData);
+
             csv = enc.convertToUTF8(convertMultiPartFileToFile(multipartFile));
-            PutObjectRequest putRequest =  new PutObjectRequest(s3BucketName, fileName, csv);
+
+            PutObjectRequest putRequest =  new PutObjectRequest(s3BucketName, fileName, csv).withMetadata(metadata);
             s3Client.putObject(putRequest);
             csv.delete();
         } catch (Exception e) {
             e.printStackTrace();
+            if (csv != null && csv.exists()) {
+                csv.delete();
+            }
         }
         return fileName;
     }
 
+    //TODO HANDLE DUPLICATE HEADER NAMES
+    //TODO test file with delimiter inside value
     public CsvMetaData getCsvMetaData(String fileName) {
 
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
         ObjectMetadata m = s3Object.getObjectMetadata();
-
+        String delimiter = m.getUserMetadata().get("delimiter");
 
         long sizeInKb = m.getContentLength();
 
-        //TODO set delimeter when uploading
-        String delimeter = ",";
-        try {
-            delimeter = m.getUserMetadata().get("DELIMETER");
-            if (delimeter == null) {
-                delimeter = ",";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<String> headers = Arrays.asList(
-                queryCSV(fileName, "SELECT * FROM s3Object s LIMIT 1").split(delimeter));
+        SelectRecordsInputStream headersInputStream = queryCSV(fileName, "SELECT * FROM s3Object s LIMIT 1", delimiter);
 
-        int rowCount = Integer.parseInt(queryCSV(fileName, "SELECT COUNT(*) FROM s3Object s").trim()) - 1;
+        List<String> headers = Arrays.asList(
+                Utilites.SelectRecordsInputStreamToString(headersInputStream)
+                        .split(delimiter));
+
+        SelectRecordsInputStream countRowsInputStream = queryCSV(fileName, "SELECT COUNT(*) FROM s3Object s", delimiter);
+        int rowCount = Integer.parseInt(
+                Utilites.SelectRecordsInputStreamToString(countRowsInputStream)
+                .trim()) - 1;
 
         return new CsvMetaData.Builder()
                 .withRowCount(rowCount)
@@ -90,12 +93,12 @@ public class StorageService {
         try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
             fos.write(file.getBytes());
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
         return convertedFile;
     }
 
-    public String queryCSV(String fileName, String query) {
+    private SelectRecordsInputStream queryCSV(String fileName, String query, String delimiter) {
         SelectObjectContentResult result = s3Client.selectObjectContent(
                 new SelectObjectContentRequest()
                         .withBucketName(s3BucketName)
@@ -103,24 +106,42 @@ public class StorageService {
                         .withExpression(query)
                         .withExpressionType(ExpressionType.SQL)
                         .withInputSerialization(new InputSerialization().withCsv(new CSVInput()
-                                .withFieldDelimiter(',')
+                                .withFieldDelimiter(",")
                                 .withRecordDelimiter('\n')))
                         .withOutputSerialization(new OutputSerialization().withCsv(new CSVOutput()
-                                .withFieldDelimiter(',')
+                                .withFieldDelimiter(",")
                                 .withRecordDelimiter('\n'))
                         )
 
         );
-        SelectRecordsInputStream s = result.getPayload().getRecordsInputStream();
-        String records = "";
+        return result.getPayload().getRecordsInputStream();
+
+    }
+
+    public List<String> getColumnSynopsis(String fileName, int columnIndex) {
+
+        String query = String.format("SELECT * FROM s._%d", columnIndex);
+        //TODO DELIMITER should be a class field....
+        String columnData = Utilites.SelectRecordsInputStreamToString(queryCSV(fileName, query, ","));
+        return null;
+    }
+
+    public byte[] downloadFile(String fileName) {
+        S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
+        String delimiter = s3Object.getObjectMetadata().getUserMetaDataOf("delimiter");
+
+        //SelectRecordsInputStream
+
+
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
-            records = IOUtils.toString(s);
-            s.close();
-        } catch (Exception e) {
+            byte[] content = IOUtils.toByteArray(inputStream);
+            return content;
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return records;
+        return null;
     }
+
 
 }

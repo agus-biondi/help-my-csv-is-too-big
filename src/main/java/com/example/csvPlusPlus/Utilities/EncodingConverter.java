@@ -1,8 +1,7 @@
-package main.java.com.example.csvPlusPlus;
+package main.java.com.example.csvPlusPlus.Utilities;
 
 import java.io.*;
 import java.nio.charset.Charset;
-
 import com.ibm.icu.text.CharsetDetector;
 
 
@@ -19,7 +18,6 @@ public class EncodingConverter {
         CharsetDetector detector = new CharsetDetector();
         detector.setText(new BufferedInputStream(inputStream));
         String fileEncoding = detector.detect().getName();
-
 
         if (fileEncoding.equals("UTF-8")) {
             return inputFile;

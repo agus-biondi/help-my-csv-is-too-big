@@ -1,5 +1,6 @@
 package main.java.com.example.csvPlusPlus.DataModels;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 public class CsvMetaData {
@@ -21,8 +22,8 @@ public class CsvMetaData {
     public String[][] getFormattedMetaData() {
         String[][] data = {
             {"Number of Columns: ", Integer.toString(getHeaders().size())},
-            {"Number of Rows: ", Integer.toString(getRowCount())},
-                {"Size of File: ", String.format("%.2f MB", getSizeInKb() * 0.0009765625)}
+            {"Number of Rows: ", NumberFormat.getInstance().format(getRowCount())},
+                {"Size of File: ", String.format("%.2f MB", getSizeInKb() * 0.0000009765625)}
         };
 
         return data;

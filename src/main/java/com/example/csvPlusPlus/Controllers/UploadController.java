@@ -28,17 +28,18 @@ public class UploadController {
     @GetMapping("/upload")
     public ModelAndView getDashboardView() {
         ModelAndView modelAndView = new ModelAndView("upload");
+        modelAndView.addObject("title", "Help, my CSV is too big!");
+        modelAndView.addObject("heading", "Step 1: Upload your data");
         return modelAndView;
     }
 
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   @RequestParam("delimiter") String delimiter,
                                    RedirectAttributes redirectAttributes) {
 
-        String thisFileName = storageService.uploadCsv(file);
-
-        //CsvMetaData csvMetaData = storageService.getCsvMetaData(thisFileName);
-
+        System.out.println(delimiter);
+        String thisFileName = storageService.uploadCsv(file, delimiter);
         return "redirect:/editor/" + thisFileName;
 
     }

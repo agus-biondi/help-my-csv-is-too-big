@@ -1,30 +1,22 @@
 package main.java.com.example.csvPlusPlus.Controllers;
 
-import com.amazonaws.services.s3.AmazonS3;
 import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
 import main.java.com.example.csvPlusPlus.Services.StorageService;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Controller
-public class DashboardController {
-
-    List<String> defaultToggles = Arrays.asList(
-            "Option 1", "Option 2", "Option 3", "Option 4", "Option 5",
-            "Option 6", "Option 7", "Option 8", "Option 9", "Option 10",
-            "Option 11", "Option 12", "Option 13", "Option 14", "Option 15"
-    );
+public class EditorController {
 
     private final StorageService storageService;
 
-
-    public DashboardController(StorageService storageService) {
+    public EditorController(StorageService storageService) {
         this.storageService = storageService;
     }
 
@@ -44,17 +36,44 @@ public class DashboardController {
 
         ModelAndView modelAndView = new ModelAndView("editor");
         modelAndView.addObject("title", "title");
-
+        modelAndView.addObject("fileName", fileName);
 
         Form f = new Form();
         f.setToggles(Arrays.asList("1","2"));
-        modelAndView.addObject("title", "Form Page");
+        modelAndView.addObject("title", "Editor");
         modelAndView.addObject("heading", "Step 2: Choose your data");
         modelAndView.addObject("toggles", metaData.getHeaders());
         modelAndView.addObject("metaData", metaData.getFormattedMetaData());
         modelAndView.addObject("form", f);
         return modelAndView;
     }
+
+    @PostMapping("/editor/{fileName}/download")
+    public ResponseEntity<ByteArrayResource> download(@PathVariable String fileName,
+                                                      @RequestParam(value = "toggle", required = false) List<String> selectedToggles) {
+
+        System.out.println(selectedToggles.toString());
+        return null;
+//        byte[] data = storageService.downloadFile(fileName);
+//        ByteArrayResource resource = new ByteArrayResource(data);
+//        return ResponseEntity
+//                .ok()
+//                .contentLength(data.length)
+//                .header("Content-type", "application/octet-stream")
+//                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
+//                .body(resource);
+    }
+
+    /*
+    @GetMapping("/editor/${filename}/getColumnSynopsis/${columnIndex}")
+    @ResponseBody
+    public List<String> getColumnSynopsis(@PathVariable String fileName, @PathVariable int columnIndex) {
+
+        return storageService.getColumnSynopsis(fileName, columnIndex);
+
+    }
+    */
+
 
     public static class Form {
         private List<String> toggles;

@@ -17,12 +17,16 @@
 			flex-wrap: wrap;
 			align-items: stretch;
 			justify-content: flex-start;
+			margin-top: 5px;
 		}
+
 		.checkbox-item {
 			flex-basis: calc(20% - 20px);
             background-color: #fff;
+            border-color: rgba(40, 167, 69, 1);
             border: 2px solid #ccc;
             border-radius: 5px;
+            padding: 2px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
@@ -40,9 +44,19 @@
 		.btn-check {
 			display: none;
 		}
+
+        .checkbox-item .btn-group {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
 		.magnify-btn {
-  margin-left: 10px;
-}
+          width: 38px;
+          height: 38px;
+          background-color: #d8d8d8;
+        }
 
 		.btn-outline-success {
             border-color: #808080;
@@ -97,14 +111,15 @@
         .button-container {
 			display: flex;
 			flex-wrap: wrap;
-			align-items: left;
-			margin-bottom: 10px;
+			align-items: center;
         }
 
         .button-container button {
           border-radius: 5px;
           border: 2px solid #ccc;
           margin-left: 5px;
+          margin-top: 10px;
+          margin-bottom: 10px;
           font-size: 16px;
           font-weight: 600;
           padding: 5px 10px;
@@ -126,10 +141,10 @@
           text-align: center;
         }
 
-        h1.text-center {
-          font-size: 2.5rem; /* or any size you want */
+        h3.text-center {
+          font-size: 2.5rem;
           font-weight: bold;
-          margin: 0 auto; /* center horizontally */
+          margin: 0 auto;
         }
 
 	</style>
@@ -137,7 +152,7 @@
   <body>
   <main>
 
-    <h1 th:text="${heading}" class="text-center"></h1>
+    <h3 th:text="${heading}" class="text-center"></h3>
 
     <div class="container">
       <div class="row">
@@ -180,25 +195,23 @@
 
               <div class="switch-wrapper">
 
-                <form method="post" action="#" th:object="${form}">
+                <form method="post" th:action="'/editor/' + ${fileName} + '/download'" th:object="${form}">
                   <div class="checkbox-wrapper" >
                     <div th:each="toggle : ${toggles}" class="checkbox-item">
 
-                      <div class="btn-group mb-3">
 
-                      <input type="checkbox" th:id="${toggle}" th:name="${toggle}" th:value="${toggle}" class="btn-check" autocomplete="off" checked>
+                      <div class="btn-group" role="group">
+
+                      <input type="checkbox" th:id="${toggle}" name="toggle" th:value="${#arrays.index(toggles, toggle)}" class="btn-check" autocomplete="off" checked>
                       <label class="btn btn-outline-success" th:for="${toggle}" th:text="${toggle}"></label>
 
-                        <div class="input-group-append">
-                          <button type="button" class="btn btn-link magnify-btn">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                          </button>
-                        </div>
+                        <button type="button" class="btn btn-link magnify-btn ml-auto" onclick="requestColumnSynopsis('${toggleIndex.index}')">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
 
                       </div>
+                      </div>
                     </div>
-                  </div>
-
 
                   <button type="submit">Submit</button>
                 </form>
@@ -259,6 +272,28 @@ console.log(lastToggled);
 
 });
 console.log(lastToggled);
+
+function requestColumnSynopsis(columnIndex) {
+    $.ajax({
+        url: `/editor/${filename}/getColumnSynopsis/${columnIndex}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            // Clear existing rows from the table
+            $('#myTable tbody').empty();
+            // Loop through the data and add a row to the table for each item
+            $.each(data, function(index, item) {
+                var row = '<tr><td>' + item.column1 + '</td><td>' + item.column2 + '</td><td>' + item.column3 + '</td></tr>';
+                $('#myTable tbody').append(row);
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(textStatus + ': ' + errorThrown);
+        }
+    });
+}
+
+
 
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js"></script>
