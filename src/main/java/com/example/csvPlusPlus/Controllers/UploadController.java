@@ -32,7 +32,7 @@ public class UploadController {
     @GetMapping("/upload")
     public ModelAndView getDashboardView() {
         ModelAndView modelAndView = new ModelAndView("upload");
-        modelAndView.addObject("title", "Help, my CSV is too big!");
+        modelAndView.addObject("title", "Help! My CSV is too big!");
         modelAndView.addObject("heading", "Step 1: Upload your data");
         return modelAndView;
     }

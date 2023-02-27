@@ -2,10 +2,15 @@ package main.java.com.example.csvPlusPlus.Utilities;
 
 import com.amazonaws.services.s3.model.SelectRecordsInputStream;
 import com.amazonaws.util.IOUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class Utilites {
 
-    public static String SelectRecordsInputStreamToString(SelectRecordsInputStream inputStream){
+    public static String selectRecordsInputStreamToString(SelectRecordsInputStream inputStream){
 
         String records = "";
         try {
@@ -16,5 +21,16 @@ public class Utilites {
         }
 
         return records;
+    }
+
+    public static File convertMultiPartFileToFile(MultipartFile file) {
+        File convertedFile = new File(System.getProperty("java.io.tmpdir") + "/"+ file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return convertedFile;
     }
 }

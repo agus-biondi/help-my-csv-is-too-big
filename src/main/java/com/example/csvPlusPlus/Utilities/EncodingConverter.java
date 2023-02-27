@@ -26,7 +26,7 @@ public class EncodingConverter {
         Charset inputCharset = Charset.forName(fileEncoding);
         Charset outputCharset = Charset.forName("UTF-8");
 
-        File outputFile = new File(inputFile.getName() + "temp");
+        File outputFile = new File(System.getProperty("java.io.tmpdir") + "/"+ inputFile.getName() + "temp");
 
         InputStreamReader reader = new InputStreamReader(new FileInputStream(inputFile), inputCharset);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile), outputCharset);

@@ -11,22 +11,21 @@ public class CsvMetaData {
     private long sizeInKb;
 
 
+    public String[][] getFormattedMetaData() {
+        String[][] data = {
+                {"Number of Columns: ", Integer.toString(getHeaders().size())},
+                {"Number of Rows: ", NumberFormat.getInstance().format(getRowCount())},
+                {"Size of File: ", String.format("%.2f MB", getSizeInKb() * 0.0000009765625)}
+        };
+
+        return data;
+    }
 
     public CsvMetaData(Builder builder) {
         this.headers = builder.headers;
         this.fileName = builder.fileName;
         this.rowCount = builder.rowCount;
         this.sizeInKb = builder.sizeInKb;
-    }
-
-    public String[][] getFormattedMetaData() {
-        String[][] data = {
-            {"Number of Columns: ", Integer.toString(getHeaders().size())},
-            {"Number of Rows: ", NumberFormat.getInstance().format(getRowCount())},
-                {"Size of File: ", String.format("%.2f MB", getSizeInKb() * 0.0000009765625)}
-        };
-
-        return data;
     }
 
     public List<String> getHeaders() {

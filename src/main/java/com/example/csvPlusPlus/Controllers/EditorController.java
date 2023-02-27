@@ -20,14 +20,6 @@ public class EditorController {
         this.storageService = storageService;
     }
 
-    /*
-    @GetMapping("/")
-    public ModelAndView getDashboardView() {
-        ModelAndView modelAndView = new ModelAndView("dashboard");
-        modelAndView.addObject("bucketName", s3BucketName);
-        modelAndView.addObject("availableFiles", amazonS3Client.listObjects(s3BucketName).getObjectSummaries());
-        return modelAndView;
-    } */
 
     @GetMapping("/editor/{fileName}")
     public ModelAndView getEditorView(@PathVariable String fileName){
@@ -35,16 +27,11 @@ public class EditorController {
         CsvMetaData metaData = storageService.getCsvMetaData(fileName);
 
         ModelAndView modelAndView = new ModelAndView("editor");
-        modelAndView.addObject("title", "title");
+        modelAndView.addObject("title", "Help! My CSV is too big!");
         modelAndView.addObject("fileName", fileName);
-
-        Form f = new Form();
-        f.setToggles(Arrays.asList("1","2"));
-        modelAndView.addObject("title", "Editor");
-        modelAndView.addObject("heading", "Step 2: Choose your data");
+        modelAndView.addObject("heading", "Step 2: Choose your columns");
         modelAndView.addObject("toggles", metaData.getHeaders());
         modelAndView.addObject("metaData", metaData.getFormattedMetaData());
-        modelAndView.addObject("form", f);
         return modelAndView;
     }
 
@@ -59,11 +46,12 @@ public class EditorController {
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + downloadFileName + "not_as_big_as_it_once_was" + "\"")
+                .header("Content-disposition", "attachment; filename=\"" + "not_as_big_as_it_once_was_" + downloadFileName + "\"")
                 .body(resource);
     }
 
     /*
+    //Column data aggregations - outside scope of project
     @GetMapping("/editor/${filename}/getColumnSynopsis/${columnIndex}")
     @ResponseBody
     public List<String> getColumnSynopsis(@PathVariable String fileName, @PathVariable int columnIndex) {
@@ -73,16 +61,4 @@ public class EditorController {
     }
     */
 
-
-    public static class Form {
-        private List<String> toggles;
-
-        public List<String> getToggles() {
-            return toggles;
-        }
-
-        public void setToggles(List<String> toggles) {
-            this.toggles = toggles;
-        }
-    }
 }

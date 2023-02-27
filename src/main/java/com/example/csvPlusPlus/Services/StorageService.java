@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+
 @Service
 public class StorageService {
 
@@ -33,9 +34,10 @@ public class StorageService {
         return s3BucketName;
     }
 
-    //TODO what if same filenameand UUID...
+
     public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
+        //TODO what if same filenameand UUID?
         String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
         EncodingConverter enc = new EncodingConverter();
 
@@ -46,7 +48,8 @@ public class StorageService {
             userMetaData.put("delimiter", delimiter);
             metadata.setUserMetadata(userMetaData);
 
-            csv = enc.convertToUTF8(convertMultiPartFileToFile(multipartFile));
+            //file needs to be UTF8 to query directly from S3
+            csv = enc.convertToUTF8(Utilites.convertMultiPartFileToFile(multipartFile));
 
             PutObjectRequest putRequest =  new PutObjectRequest(s3BucketName, fileName, csv).withMetadata(metadata);
             s3Client.putObject(putRequest);
@@ -60,8 +63,8 @@ public class StorageService {
         return fileName;
     }
 
-    //TODO HANDLE DUPLICATE HEADER NAMES
-    //TODO test file with delimiter inside value
+
+    //TODO test a field value that contains delimiter...
     public CsvMetaData getCsvMetaData(String fileName) {
 
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
@@ -72,13 +75,14 @@ public class StorageService {
 
         SelectRecordsInputStream headersInputStream = queryCSV(fileName, "SELECT * FROM s3Object s LIMIT 1", delimiter);
 
+        //TODO do this once and set it in userSetMeta data instead of potentially multiple times.
         List<String> headers = Arrays.asList(
-                Utilites.SelectRecordsInputStreamToString(headersInputStream)
+                Utilites.selectRecordsInputStreamToString(headersInputStream)
                         .split(delimiter));
 
         SelectRecordsInputStream countRowsInputStream = queryCSV(fileName, "SELECT COUNT(*) FROM s3Object s", delimiter);
         int rowCount = Integer.parseInt(
-                Utilites.SelectRecordsInputStreamToString(countRowsInputStream)
+                Utilites.selectRecordsInputStreamToString(countRowsInputStream)
                 .trim()) - 1;
 
         return new CsvMetaData.Builder()
@@ -89,21 +93,15 @@ public class StorageService {
                 .build();
     }
 
-    private File convertMultiPartFileToFile(MultipartFile file) {
-        File convertedFile = new File(file.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(file.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return convertedFile;
-    }
+
 
     private SelectRecordsInputStream queryCSV(String fileName, String query, String delimiter) {
+
+        //TODO use enums for delimiter
         if (delimiter.equals("\\t")) {
-            System.out.println("yes");
             delimiter = "\t";
         }
+
         SelectObjectContentResult result = s3Client.selectObjectContent(
                 new SelectObjectContentRequest()
                         .withBucketName(s3BucketName)
@@ -123,14 +121,6 @@ public class StorageService {
 
     }
 
-    public List<String> getColumnSynopsis(String fileName, int columnIndex) {
-
-        String query = String.format("%d", columnIndex);
-        //TODO DELIMITER should be a class field....
-        String columnData = Utilites.SelectRecordsInputStreamToString(queryCSV(fileName, query, ","));
-        return null;
-    }
-
     public byte[] downloadFile(String fileName, List<Integer> selectedColumnNumbers) {
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
         String delimiter = s3Object.getObjectMetadata().getUserMetaDataOf("delimiter");
@@ -145,8 +135,6 @@ public class StorageService {
         System.out.println(query.toString());
         SelectRecordsInputStream recordsResults = queryCSV(fileName, query.toString(), delimiter);
 
-
-        //S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
             byte[] content = IOUtils.toByteArray(recordsResults);
             return content;
@@ -157,5 +145,15 @@ public class StorageService {
 
     }
 
+/*
+    Out of project scope.
+    public List<String> getColumnSynopsis(String fileName, int columnIndex) {
+
+        String query = String.format("%d", columnIndex);
+        //TODO DELIMITER could be a class field?
+        String columnData = Utilites.selectRecordsInputStreamToString(queryCSV(fileName, query, ","));
+        return null;
+    }
+*/
 
 }

@@ -19,12 +19,4 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-    @EventListener(classes = ApplicationReadyEvent.class)
-    public void onApplicationReadyEvent(ApplicationReadyEvent event) {
-        /*
-        for (Bucket availableBuckets : amazonS3Client.listBuckets()) {
-            System.out.println(availableBuckets.getName());
-        }
-        */
-    }
 }
