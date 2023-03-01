@@ -1,0 +1,34 @@
+@startuml
+
+actor "Client" as client
+participant "Editor Controller" as editorController
+participant "Storage Service" as storageService
+database "S3" as s3
+
+title Return Edited CSV
+
+client -> editorController : HTTP Post Form Data
+activate editorController
+
+editorController -> storageService : downloadFile(fileId, parameters)
+activate storageService
+
+storageService -> s3: GetUserMetaData(file)
+activate s3
+
+s3 -> storageService : return UserMetaData
+deactivate s3
+
+storageService -> s3 : SelectObjectContentRequest(file, query)
+activate s3
+
+s3 -> storageService : return SelectRecordsInputStream
+deactivate s3
+
+storageService -> editorController : return byteArray of CSV
+deactivate storageService
+
+editorController --> client : return ResponseEntity with byteArray of CSV
+deactivate editorController
+
+@enduml

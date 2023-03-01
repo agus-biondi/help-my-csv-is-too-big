@@ -4,9 +4,9 @@
 
 ## 1. Problem Statement
 
-CSV Files are commonly used to store, or transfer information. Spreadsheet programs are the most common way to easily open, edit, and export csv files. Once the size of a csv file increases beyond a certain point, it can be slow, or even impossible to use spreadsheet programs to open, or edit csv files. This happens even if all you care about are a couple of rows inside a csv.
+CSV Files are commonly used to store, or transfer information. Spreadsheet programs are the most common way to easily open, edit, and export csv files. Once the size of a csv file increases beyond a certain point, it can be slow, or even impossible to use spreadsheet programs to open, or edit csv files.
 
-This design document describes the "help, my csv is too big" service, which will allow used to upload csv files, view some of its data such as headers, or the number of rows. The service will allow users to filter out columns they don't need, and select only the records they care about using filters. The service will then retunr to the user a csv file with only the information they requested.
+This design document describes the "help, my csv is too big" service, which will allow used to upload csv files, view some of its data such as headers, or the number of rows. The service will allow users to filter out columns they don't need, and reduce the amount of information in the file. The service will then return to the user a csv file with only the information they requested.
 
 
 ## 2. Top Questions to Resolve in Review
@@ -14,8 +14,8 @@ This design document describes the "help, my csv is too big" service, which will
 *List the most important questions you have about your design, or things that
 you are still debating internally that you might like help working through.*
 
-1.   
-2.   
+1. Will S3 be the only service required to query the file, or will I need another service to query the file once it's been uploaded?
+2. 
 3.  
 
 ## 3. Use Cases
@@ -24,32 +24,29 @@ you are still debating internally that you might like help working through.*
 would like to do (and why). You may also include use cases for yourselves, or
 for the organization providing the product to customers.*
 
-U1. *As a [product] customer, I want to `<result>` when I `<action>`*
+U1. *As a user, I want to be able to upload a csv to the service. I also want to be able to specify what delimiter my file is using.*
 
-U2. *As a [product] customer, I want to view my grocery list when I log into the
-grocery list page*
+U2. *As a user, I want to be able to view the general information about the file I just uploaded (e.g. Row Count, Column Count, Size)*
     
-U3. ...
+U3. *As a user, I want to be able to select what columns I want.*
+
+U4. *As a user, I want to be able to see general information about specific columns (e.g. for a number column, min, median, max aggregations).*
+
+U5. *As a user, I want to be able to create filters on columns for row-level data that limits the number of rows that are returned (e.g. 'Only show rows where the value of the column field "Color" is "Red"').*
+
+U6. *As a user, I want to be able to download a csv with only the data I selected.*
+
+U7. *As a user, I want to be able to view the files I've previously uploaded, and the filters I've used to download files in the past.*
 
 ## 4. Project Scope
 
-*Clarify which parts of the problem you intend to solve. It helps reviewers know
-what questions to ask to make sure you are solving for what you say and stops
-discussions from getting sidetracked by aspects you do not intend to handle in
-your design.*
-
 ### 4.1. In Scope
 
-*Which parts of the problem defined in Sections 1 and 3 will you solve with this
-design?*
+Parts 1,2,3,6
 
 ### 4.2. Out of Scope
 
-*Based on your problem description in Sections 1 and 3, are there any aspects
-you are not planning to solve? Do potential expansions or related problems occur
-to you that you want to explicitly say you are not worrying about now? Feel free
-to put anything here that you think your team can't accomplish in the unit, but
-would love to do with more time.*
+Parts 4,5,7
 
 # 5. Proposed Architecture Overview
 

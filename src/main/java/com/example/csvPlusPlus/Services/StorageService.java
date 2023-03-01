@@ -37,7 +37,6 @@ public class StorageService {
 
     public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
-        //TODO what if same filenameand UUID?
         String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
         EncodingConverter enc = new EncodingConverter();
 
@@ -63,8 +62,6 @@ public class StorageService {
         return fileName;
     }
 
-
-    //TODO test a field value that contains delimiter...
     public CsvMetaData getCsvMetaData(String fileName) {
 
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
@@ -75,7 +72,7 @@ public class StorageService {
 
         SelectRecordsInputStream headersInputStream = queryCSV(fileName, "SELECT * FROM s3Object s LIMIT 1", delimiter);
 
-        //TODO do this once and set it in userSetMeta data instead of potentially multiple times.
+        //TODO Could do this once when file is uploaded, set it in userSetMeta data instead of potentially multiple times.
         List<String> headers = Arrays.asList(
                 Utilites.selectRecordsInputStreamToString(headersInputStream)
                         .split(delimiter));

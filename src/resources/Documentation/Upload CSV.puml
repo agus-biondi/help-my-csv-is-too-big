@@ -1,0 +1,35 @@
+@startuml
+
+actor "Client" as client
+participant "Upload Controller" as uploadController
+participant "Storage Service" as storageService
+participant "Encoder" as encoder
+database "S3" as s3
+
+title Upload CSV
+
+client -> uploadController : HTTP Request
+activate uploadController
+
+uploadController -> storageService : upload()
+activate storageService
+
+storageService -> encoder : convertToUTF8(File)
+activate encoder
+
+encoder -> storageService : return UTF-8 File
+deactivate encoder
+
+storageService -> s3: putObjectRequest(file)
+
+
+s3 -> storageService : return success
+deactivate s3
+
+storageService -> uploadController : return success
+deactivate storageService
+
+uploadController --> client : return 200 response with fileId
+deactivate uploadController
+
+@enduml
