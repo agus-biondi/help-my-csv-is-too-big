@@ -1,6 +1,6 @@
-# team-two Design Document
+# `team-two` Design Document
 
-## *Project Title* Design
+## *Help! My CSV is too big!* Design
 
 ## 1. Problem Statement
 
@@ -11,18 +11,10 @@ This design document describes the "help, my csv is too big" service, which will
 
 ## 2. Top Questions to Resolve in Review
 
-*List the most important questions you have about your design, or things that
-you are still debating internally that you might like help working through.*
-
 1. Will S3 be the only service required to query the file, or will I need another service to query the file once it's been uploaded?
-2. 
-3.  
+
 
 ## 3. Use Cases
-
-*This is where we work backwards from the customer and define what our customers
-would like to do (and why). You may also include use cases for yourselves, or
-for the organization providing the product to customers.*
 
 U1. *As a user, I want to be able to upload a csv to the service. I also want to be able to specify what delimiter my file is using.*
 
@@ -42,66 +34,57 @@ U7. *As a user, I want to be able to view the files I've previously uploaded, an
 
 ### 4.1. In Scope
 
-Parts 1,2,3,6
+Uploading a CSV with a specified delimiter to S3.
+Displaying some of the files metadata, letting the user choose which columns they are interested in. 
+Letting the user download the CSV with only the columns they specified.
+
 
 ### 4.2. Out of Scope
-
-Parts 4,5,7
+ 
+Displaying aggregate data information for each column in the file.
+Letting the user create filters on fields to limit the rows that are returned.
+Letting the user view files previously uploaded, and filters used to download past files.
 
 # 5. Proposed Architecture Overview
 
-*Describe broadly how you are proposing to solve for the requirements you
-described in Section 3.*
+We will use springboot and thymeleaf to provide access to two endpoints `/upload` and `/editor`
 
-*This may include class diagram(s) showing what components you are planning to
-build.*
+The `upload` endpoint will allow the user to upload a csv file, and specify what delimiter the file uses. The file will be stored in an AWS S3 bucket. The file delimiter will be stored as UserMetaData in the S3 object holding the file.
+Once uploaded, the page will be redirected to the `/editor/{fileName}` endpoint, with the path specifying the file.
 
-*You should argue why this architecture (organization of components) is
-reasonable. That is, why it represents a good data flow and a good separation of
-concerns. Where applicable, argue why this architecture satisfies the stated
-requirements.*
+The `editor` page will return some CSV metadata, most importantly the column headers. The user will be able to choose which columns they are interested in, and after submitting the form, will have a CSV returned to them.
+The form when submitted will access the `/editor/{fileName}/download` endpoint, which will generate a SQL query that is used to query the CSV file in S3. S3 will return the data requested, and the user will receive their file.
 
 # 6. API
 
 ## 6.1. Public Models
 
-*Define the data models your service will expose in its responses via your
-*`-Model`* package. These will be equivalent to the *`PlaylistModel`* and
-*`SongModel`* from the Unit 3 project.*
+```
+// CsvMetaData
 
-## 6.2. *First Endpoint*
+List<String> headers;
+String fileName;
+int rowCount;
+long sizeInKb;
+```
 
-*Describe the behavior of the first endpoint you will build into your service
-API. This should include what data it requires, what data it returns, and how it
-will handle any known failure cases. You should also include a sequence diagram
-showing how a user interaction goes from user to website to service to database,
-and back. This first endpoint can serve as a template for subsequent endpoints.
-(If there is a significant difference on a subsequent endpoint, review that with
-your team before building it!)*
+## 6.2. *Upload Endpoint*
 
-*(You should have a separate section for each of the endpoints you are expecting
-to build...)*
+Accepts `POST` request to `/upload`
 
-## 6.3 *Second Endpoint*
+Accepts form data to upload a File to S3, and a user-specified delimiter. Converts the file to UTF-8, and uploads the File to S3 with the delimiter specified saved in the file's metadata.
 
-*(repeat, but you can use shorthand here, indicating what is different, likely
-primarily the data in/out and error conditions. If the sequence diagram is
-nearly identical, you can say in a few words how it is the same/different from
-the first endpoint)*
 
-# 7. Tables
 
-*Define the DynamoDB tables you will need for the data your service will use. It
-may be helpful to first think of what objects your service will need, then
-translate that to a table structure, like with the *`Playlist` POJO* versus the
-`playlists` table in the Unit 3 project.*
+## 6.3 *Download Endpoint*
+
+Accepts `GET` request to `/editor/:fileName/download`
+
+Accepts a request to download a csv. The csv will be generated from the provided `fileName` and filtered by the columns selected by the user in the form.
+
 
 # 8. Pages
 
-*Include mock-ups of the web pages you expect to build. These can be as
-sophisticated as mockups/wireframes using drawing software, or as simple as
-hand-drawn pictures that represent the key customer-facing components of the
-pages. It should be clear what the interactions will be on the page, especially
-where customers enter and submit data. You may want to accompany the mockups
-with some description of behaviors of the page (e.g. “When customer submits the
-submit-dog-photo button, the customer is sent to the doggie detail page”)*
+![upload page](images/design_document/upload_page.png)
+
+![editor page](images/design_document/editor_page.png)

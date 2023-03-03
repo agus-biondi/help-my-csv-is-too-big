@@ -35,7 +35,7 @@ public class EditorController {
         return modelAndView;
     }
 
-    @PostMapping("/editor/{fileName}/download")
+    @GetMapping("/editor/{fileName}/download")
     public ResponseEntity<ByteArrayResource> download(@PathVariable String fileName,
                                                       @RequestParam(value = "toggle", required = false) List<Integer> selectedColumnNumbers) {
 

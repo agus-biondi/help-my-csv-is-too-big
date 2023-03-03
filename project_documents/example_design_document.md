@@ -105,14 +105,6 @@ Integer songCount;
 List<String> tags;
 ```
 
-```
-// SongModel
-
-String asin;
-String album;
-Integer trackNumber;
-String title;
-```
 
 ### 6.2. Get Playlist Endpoint
 

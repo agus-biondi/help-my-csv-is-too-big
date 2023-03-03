@@ -245,7 +245,7 @@
 
               <div class="switch-wrapper">
 
-                <form method="post" th:action="'/editor/' + ${fileName} + '/download'" th:object="${form}">
+                <form method="get" th:action="'/editor/' + ${fileName} + '/download'" th:object="${form}">
                   <div class="checkbox-wrapper" >
                     <div th:each="toggle, iterStat : ${toggles}" class="checkbox-item">
 
