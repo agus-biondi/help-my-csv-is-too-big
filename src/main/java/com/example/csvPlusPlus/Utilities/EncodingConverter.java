@@ -11,7 +11,7 @@ public class EncodingConverter {
 
     }
 
-    public File convertToUTF8(File inputFile) throws Exception {
+    public File getFileAsUTF8(File inputFile) throws Exception {
 
 
         FileInputStream inputStream = new FileInputStream(inputFile);

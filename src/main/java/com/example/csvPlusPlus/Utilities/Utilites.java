@@ -4,9 +4,10 @@ import com.amazonaws.services.s3.model.SelectRecordsInputStream;
 import com.amazonaws.util.IOUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 public class Utilites {
 
@@ -33,4 +34,5 @@ public class Utilites {
 
         return convertedFile;
     }
+
 }

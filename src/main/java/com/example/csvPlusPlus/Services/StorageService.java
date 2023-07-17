@@ -11,9 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -37,6 +36,9 @@ public class StorageService {
 
     public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
+        String username = "agustin";
+        s3BucketName += "/" + username;
+
         String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
         EncodingConverter enc = new EncodingConverter();
 
@@ -45,10 +47,9 @@ public class StorageService {
             ObjectMetadata metadata = new ObjectMetadata();
             Map<String, String> userMetaData = new TreeMap<>();
             userMetaData.put("delimiter", delimiter);
-            metadata.setUserMetadata(userMetaData);
 
             //file needs to be UTF8 to query directly from S3
-            csv = enc.convertToUTF8(Utilites.convertMultiPartFileToFile(multipartFile));
+            csv = enc.getFileAsUTF8(Utilites.convertMultiPartFileToFile(multipartFile));
 
             PutObjectRequest putRequest =  new PutObjectRequest(s3BucketName, fileName, csv).withMetadata(metadata);
             s3Client.putObject(putRequest);
@@ -59,8 +60,10 @@ public class StorageService {
                 csv.delete();
             }
         }
+
         return fileName;
     }
+    
 
     public CsvMetaData getCsvMetaData(String fileName) {
 
