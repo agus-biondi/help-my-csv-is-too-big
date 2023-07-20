@@ -1,11 +1,6 @@
 package main.java.com.example.csvPlusPlus.Controllers;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.transfer.Upload;
-import com.amazonaws.services.s3.waiters.AmazonS3Waiters;
 import lombok.extern.slf4j.Slf4j;
-import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
 import main.java.com.example.csvPlusPlus.Services.StorageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

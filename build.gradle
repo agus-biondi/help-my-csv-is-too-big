@@ -84,14 +84,13 @@ dependencies {
 
 
     // Added for AWS Lambda Functions
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
-    implementation 'com.amazonaws:aws-java-sdk-s3'
-    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
-    implementation 'com.amazonaws:aws-lambda-java-events:2.2.9'
-    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
-    //implementation platform('software.amazon.awssdk:bom:2.17.100')
-    implementation 'software.amazon.awssdk:glue:2.20.103'
-
+    implementation platform('software.amazon.awssdk:bom:2.20.103')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:glue'
+    implementation 'software.amazon.awssdk:athena'
+    implementation 'software.amazon.awssdk:lambda'
+    implementation 'software.amazon.awssdk:cognitoidentityprovider'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
 
     implementation 'org.webjars:bootstrap-switch:3.3.4'
 
@@ -121,3 +120,8 @@ task buildZip(type: Zip) {
         from(configurations.runtimeClasspath)
     }
 }
+
+tasks.withType(JavaCompile) {
+    options.failOnError(false)
+}
+

@@ -1,8 +1,5 @@
 package main.java.com.example.csvPlusPlus.Services;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.IOUtils;
 import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
 import main.java.com.example.csvPlusPlus.Utilities.EncodingConverter;
 import main.java.com.example.csvPlusPlus.Utilities.Utilites;
@@ -10,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-
 
 @Service
 public class StorageService {
@@ -23,7 +21,7 @@ public class StorageService {
     private String s3BucketName;
 
     @Autowired
-    private AmazonS3 s3Client;
+    private S3Client s3Client;
 
     public StorageService() {
 
