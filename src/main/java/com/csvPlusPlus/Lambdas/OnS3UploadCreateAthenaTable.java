@@ -1,4 +1,4 @@
-package main.java.com.example.csvPlusPlus.Lambdas;
+package main.java.com.csvPlusPlus.Lambdas;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;

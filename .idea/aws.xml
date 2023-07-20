@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="accountSettings">
-    <option name="activeProfile" value="profile:default" />
+    <option name="activeProfile" value="profile:help-my-csv" />
     <option name="activeRegion" value="us-east-1" />
     <option name="recentlyUsedProfiles">
       <list>
+        <option value="profile:help-my-csv" />
         <option value="profile:default" />
         <option value="profile:s3-for-csv-program" />
         <option value="profile:492664502825_BD-Student-Unit-4" />

@@ -1,7 +1,7 @@
-package main.java.com.example.csvPlusPlus.Controllers;
+package main.java.com.csvPlusPlus.Controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import main.java.com.example.csvPlusPlus.Services.StorageService;
+import main.java.com.csvPlusPlus.Services.StorageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,13 +33,14 @@ public class UploadController {
     }
 
     @PostMapping("/upload")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
+    public void handleFileUpload(@RequestParam("file") MultipartFile file,
                                    @RequestParam("delimiter") String delimiter,
                                    RedirectAttributes redirectAttributes) {
 
         System.out.println(delimiter);
         String thisFileName = storageService.uploadCsv(file, delimiter);
-        return "redirect:/editor/" + thisFileName;
+        //return null;
+        //return "redirect:/editor/" + thisFileName;
 
     }
 }

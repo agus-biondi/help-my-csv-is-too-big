@@ -1,4 +1,4 @@
-package main.java.com.example.csvPlusPlus.DataModels;
+package main.java.com.csvPlusPlus.DataModels;
 
 //Unused outside of scope
 public class StringColumnSynopsis {

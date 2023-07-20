@@ -1,14 +1,13 @@
-package main.java.com.example.csvPlusPlus.Controllers;
+package main.java.com.csvPlusPlus.Controllers;
 
-import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
-import main.java.com.example.csvPlusPlus.Services.StorageService;
+import main.java.com.csvPlusPlus.DataModels.CsvMetaData;
+import main.java.com.csvPlusPlus.Services.StorageService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -24,17 +23,17 @@ public class EditorController {
     @GetMapping("/editor/{fileName}")
     public ModelAndView getEditorView(@PathVariable String fileName){
 
-        CsvMetaData metaData = storageService.getCsvMetaData(fileName);
+        //CsvMetaData metaData = storageService.getCsvMetaData(fileName);
 
         ModelAndView modelAndView = new ModelAndView("editor");
         modelAndView.addObject("title", "Help! My CSV is too big!");
         modelAndView.addObject("fileName", fileName);
         modelAndView.addObject("heading", "Step 2: Choose your columns");
-        modelAndView.addObject("toggles", metaData.getHeaders());
-        modelAndView.addObject("metaData", metaData.getFormattedMetaData());
+        //modelAndView.addObject("toggles", metaData.getHeaders());
+        //modelAndView.addObject("metaData", metaData.getFormattedMetaData());
         return modelAndView;
     }
-
+/*
     @GetMapping("/editor/{fileName}/download")
     public ResponseEntity<ByteArrayResource> download(@PathVariable String fileName,
                                                       @RequestParam(value = "toggle", required = false) List<Integer> selectedColumnNumbers) {

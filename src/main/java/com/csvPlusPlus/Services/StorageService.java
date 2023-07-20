@@ -1,12 +1,13 @@
-package main.java.com.example.csvPlusPlus.Services;
+package main.java.com.csvPlusPlus.Services;
 
-import main.java.com.example.csvPlusPlus.DataModels.CsvMetaData;
-import main.java.com.example.csvPlusPlus.Utilities.EncodingConverter;
-import main.java.com.example.csvPlusPlus.Utilities.Utilites;
+import main.java.com.csvPlusPlus.DataModels.CsvMetaData;
+import main.java.com.csvPlusPlus.Utilities.EncodingConverter;
+import main.java.com.csvPlusPlus.Utilities.Utilites;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
@@ -34,23 +35,30 @@ public class StorageService {
 
     public String uploadCsv(MultipartFile multipartFile, String delimiter) {
 
+        System.out.println("uploading...");
         String username = "agustin";
-        s3BucketName += "/" + username;
+        //s3BucketName += String.format("/uploads/%s/%s", username,UUID.randomUUID());
+        String fileName = multipartFile.getOriginalFilename();
+        String path = String.format("uploads/%s/%s/%s", username,UUID.randomUUID(), fileName);
 
-        String fileName = multipartFile.getOriginalFilename() + UUID.randomUUID();
         EncodingConverter enc = new EncodingConverter();
-
+System.out.println(fileName);
+System.out.println(s3BucketName);
+        System.out.println(path);
         File csv = null;
         try {
-            ObjectMetadata metadata = new ObjectMetadata();
             Map<String, String> userMetaData = new TreeMap<>();
             userMetaData.put("delimiter", delimiter);
 
             //file needs to be UTF8 to query directly from S3
             csv = enc.getFileAsUTF8(Utilites.convertMultiPartFileToFile(multipartFile));
 
-            PutObjectRequest putRequest =  new PutObjectRequest(s3BucketName, fileName, csv).withMetadata(metadata);
-            s3Client.putObject(putRequest);
+            PutObjectRequest putRequest = PutObjectRequest.builder()
+                    .bucket(s3BucketName)
+                    .key(path)
+                    .metadata(userMetaData)
+                    .build();
+            s3Client.putObject(putRequest, RequestBody.fromFile(csv));
             csv.delete();
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +70,7 @@ public class StorageService {
         return fileName;
     }
     
-
+/*
     public CsvMetaData getCsvMetaData(String fileName) {
 
         S3Object s3Object = s3Client.getObject(s3BucketName, fileName);
@@ -142,7 +150,7 @@ public class StorageService {
         }
 
     }
-
+*/
 /*
     Out of project scope.
     public List<String> getColumnSynopsis(String fileName, int columnIndex) {

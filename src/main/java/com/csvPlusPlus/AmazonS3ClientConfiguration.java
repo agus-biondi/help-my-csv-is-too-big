@@ -1,12 +1,12 @@
-package main.java.com.example.csvPlusPlus;
+package main.java.com.csvPlusPlus;
 
-import com.amazonaws.auth.*;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class AmazonS3ClientConfiguration {
@@ -15,6 +15,15 @@ public class AmazonS3ClientConfiguration {
     private String region;
 
     @Bean
+    public S3Client s3Client() {
+        S3Client s3Client = S3Client.builder()
+                .region(Region.of(region))
+                .build();
+
+        return s3Client;
+    }
+    /*
+    @Bean
     public AmazonS3 amazonS3() {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard()
                 .withCredentials(new DefaultAWSCredentialsProviderChain())
@@ -22,5 +31,5 @@ public class AmazonS3ClientConfiguration {
                 .build();
 
         return amazonS3;
-    }
+    }*/
 }
