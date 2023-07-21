@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 
+import org.assertj.core.util.VisibleForTesting;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.athena.model.StartQueryExecutionResponse;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -22,11 +23,18 @@ import java.util.concurrent.CompletableFuture;
 
 public class OnS3UploadCreateAthenaTable implements RequestHandler<S3Event, String> {
 
-    private final AthenaClient athena = AthenaClient.create();
-    private final S3AsyncClient s3AsyncClient = S3AsyncClient.create();
+    private AthenaClient athena;
+    private S3AsyncClient s3AsyncClient;
     private LambdaLogger logger;
 
     public OnS3UploadCreateAthenaTable() {
+        this.athena = AthenaClient.create();
+        this.s3AsyncClient = S3AsyncClient.create();
+    }
+
+    public OnS3UploadCreateAthenaTable(AthenaClient athena, S3AsyncClient s3AsyncClient) {
+        this.athena = athena;
+        this.s3AsyncClient = s3AsyncClient;
     }
 
     @Override
@@ -118,6 +126,8 @@ public class OnS3UploadCreateAthenaTable implements RequestHandler<S3Event, Stri
         String databaseName = "help-my-csv-is-too-big";
         String tableName = key.substring(key.lastIndexOf("/") + 1);
         tableName = sanitizeToAthenaCompliantName(tableName);
+        tableName = removeFileExtension(tableName);
+
         String folderPath = key.substring(0, key.lastIndexOf("/"));
         String query = String.format("CREATE EXTERNAL TABLE IF NOT EXISTS `%s`.`%s` (\n%s\n)" +
                         "ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' " +
@@ -145,22 +155,25 @@ public class OnS3UploadCreateAthenaTable implements RequestHandler<S3Event, Stri
 
     }
 
-    private static String removeFileExtension(String filename) {
+    @VisibleForTesting
+    public String removeFileExtension(String filename) {
         if (filename == null || filename.lastIndexOf(".") == -1) {
             return filename;
         }
         return filename.substring(0, filename.lastIndexOf("."));
     }
 
-    private String sanitizeToAthenaCompliantName(String unsanitizedString) {
+    @VisibleForTesting
+    public String sanitizeToAthenaCompliantName(String unsanitizedString) {
         String toUnderscoreRegex = "[\\s-]";
-        unsanitizedString.replaceAll(toUnderscoreRegex, "_");
+        unsanitizedString = unsanitizedString.replaceAll(toUnderscoreRegex, "_");
 
-        String regex = "[^a-zA-Z0-9_]";
+        String regex = "[^a-zA-Z0-9\\_]";
         return unsanitizedString.replaceAll(regex, "");
     }
 
-    private String[] uniqueColumnNames(String[] columnNames) {
+    @VisibleForTesting
+    public String[] uniqueColumnNames(String[] columnNames) {
         Map<String, Integer> fileNames = new HashMap<>();
 
         for (int i = 0; i < columnNames.length; i++) {
