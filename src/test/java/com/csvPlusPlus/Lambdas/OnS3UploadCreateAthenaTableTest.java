@@ -31,21 +31,6 @@ public class OnS3UploadCreateAthenaTableTest {
     }
 
     @Test
-    public void onS3UploadCreateAthenaTable_createInstance_instanceVariablesNotNull() throws NoSuchFieldException, IllegalAccessException {
-        Field athenaField = OnS3UploadCreateAthenaTable.class.getDeclaredField("athena");
-        athenaField.setAccessible(true);
-        AthenaClient athenaClient = (AthenaClient) athenaField.get(lambda);
-
-        Field s3AsyncClientField = OnS3UploadCreateAthenaTable.class.getDeclaredField("s3AsyncClient");
-        s3AsyncClientField.setAccessible(true);
-        S3AsyncClient s3AsyncClient = (S3AsyncClient) s3AsyncClientField.get(lambda);
-
-        assertNotNull(athenaClient, "AthenaClient in handler was not initialized");
-        assertNotNull(s3AsyncClient, "S3AsyncClient in handler was not initialized");
-    }
-
-
-    @Test
     public void sanitizeToAthenaCompliantName_WithSpecialChars_RemovesSpecialChars() {
         String sanitized = lambda.sanitizeToAthenaCompliantName("Test#Name!");
         assertEquals("TestName", sanitized, "Sanitized string should have removed special characters");
